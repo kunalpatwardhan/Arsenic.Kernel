@@ -93,7 +93,9 @@
 #include <linux/oneplus.h>
 #endif
 ATOMIC_NOTIFIER_HEAD(migration_notifier_head);
-
+#define MAX_NICE	19
+#define MIN_NICE	-20
+#define NICE_WIDTH	(MAX_NICE - MIN_NICE + 1)
 void start_bandwidth_timer(struct hrtimer *period_timer, ktime_t period)
 {
 	unsigned long delta;
@@ -1847,6 +1849,15 @@ void sched_fork(struct task_struct *p)
 	 * Make sure we do not leak PI boosting priority to the child.
 	 */
 	p->prio = current->normal_prio;
+	     /* Lorenzo Nava: force policy to RR */
+	     if (p->policy == SCHED_NORMAL) {
+	         p->prio = current->normal_prio - NICE_WIDTH -
+	                 PRIO_TO_NICE(current->static_prio);
+	         p->normal_prio = p->prio;
+	         p->rt_priority = p->prio;
+	         p->policy = SCHED_RR;
+	         p->static_prio = NICE_TO_PRIO(0);
+	     }
 
 	/*
 	 * Revert to default priority/policy on fork if requested.
@@ -4205,6 +4216,12 @@ static int __sched_setscheduler(struct task_struct *p, int policy,
 	/* may grab non-irq protected spin_locks */
 	BUG_ON(in_interrupt());
 recheck:
+
+/* Lorenzo Nava: force policy of process to RR */
+	     if (policy == SCHED_NORMAL) {
+	    	 policy = SCHED_RR;
+	     }
+
 	/* double check policy once rq lock held */
 	if (policy < 0) {
 		reset_on_fork = p->sched_reset_on_fork;
