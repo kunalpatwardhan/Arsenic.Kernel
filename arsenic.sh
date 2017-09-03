@@ -27,9 +27,9 @@ yellow='\033[0;33m'
 red='\033[0;31m'
 nocol='\033[0m'
 
-make clean && make mrproper
+#make clean && make mrproper
 export ARCH=arm
-export CROSS_COMPILE="$ROOT_PATH/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-"
+export CROSS_COMPILE="arm-linux-androideabi-"
 
 compile_kernel ()
 {
@@ -39,6 +39,7 @@ echo "                                    Compiling Arsenic-Kernel with GCC 4.9 
 echo "                    "
 echo -e "**********************************************************************************************"
 make onyx_defconfig
+make menuconfig
 make -j16
 if [ ! -e $KERN_IMG ];then
 echo -e "$red Kernel Compilation failed! Fix the errors! $nocol"

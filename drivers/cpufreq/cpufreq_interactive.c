@@ -389,7 +389,7 @@ static void cpufreq_interactive_timer(unsigned long data)
 	u64 now;
 	unsigned int delta_time;
 	u64 cputime_speedadj;
-	int cpu_load;
+	int cpu_load=0;
 	struct cpufreq_interactive_cpuinfo *pcpu =
 		&per_cpu(cpuinfo, data);
 	unsigned int new_freq;

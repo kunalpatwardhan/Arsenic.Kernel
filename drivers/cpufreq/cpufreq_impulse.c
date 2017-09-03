@@ -415,7 +415,7 @@ static void cpufreq_impulse_timer(unsigned long data)
 	unsigned int loadadjfreq;
 	unsigned int index;
 	unsigned long flags;
-	unsigned int this_hispeed_freq;
+	unsigned int this_hispeed_freq=0;
 	bool boosted;
 
 	if (!down_read_trylock(&pcpu->enable_sem))
